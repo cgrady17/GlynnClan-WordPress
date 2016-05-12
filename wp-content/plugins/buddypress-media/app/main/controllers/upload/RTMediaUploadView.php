@@ -61,8 +61,16 @@ class RTMediaUploadView {
 				|| ( isset( $rtmedia_query->is_upload_shortcode ) && ! isset( $this->attributes['privacy'] ) )
 		) {
 			if ( ( isset( $rtmedia_query->query[ 'context' ] ) && $rtmedia_query->query[ 'context' ] == 'group' ) || ( function_exists( 'bp_is_groups_component' ) && bp_is_groups_component() ) ) {
-                // if the context is group, then set the media privacy to public
-                $privacy = "<input type='hidden' name='privacy' value='0'/>";
+                $group_status         = bp_get_group_status();                
+                $privacy_levels_array = array(
+                    'public'  => 0,
+                    'private' => 20,
+                    'hidden'  => 20
+                );                
+                $privacy_levels_array = apply_filters( 'rtmedia_group_privacy_levels', $privacy_levels_array );
+                $privacy_val          = $privacy_levels_array[ $group_status ];
+                
+                $up_privacy = $privacy = "<input type='hidden' name='privacy' value='" . $privacy_val . "' />";
 			} else {
                 $up_privacy = new RTMediaPrivacy( false );
 				$up_privacy = $up_privacy->select_privacy_ui( false, 'rtSelectPrivacy' );
